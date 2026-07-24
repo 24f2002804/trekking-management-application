@@ -15,7 +15,7 @@ with app.app_context():
             email="admin@trekking.com",
             role="admin",
         )
-        admin.set_password("Admin@123")  # change after first login
+        admin.set_password("Admin@123") 
         db.session.add(admin)
         db.session.commit()
         print("Admin user created successfully.")
