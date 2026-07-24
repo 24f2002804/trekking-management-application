@@ -15,15 +15,10 @@ def create_app(config_class=Config):
     login_manager.init_app(app)
     login_manager.login_view = "auth.login"
 
-    # Import models so SQLAlchemy knows about them before create_all()
     from app import models  # noqa: F401
 
     @login_manager.user_loader
     def load_user(user_id):
         return models.User.query.get(int(user_id))
-
-    # Blueprints will be registered here in later milestones
-    # from app.routes.auth import auth_bp
-    # app.register_blueprint(auth_bp)
 
     return app
