@@ -4,6 +4,7 @@ from flask_login import LoginManager
 from config import Config
 
 db = SQLAlchemy()
+
 login_manager = LoginManager()
 
 
@@ -20,6 +21,7 @@ def create_app(config_class=Config):
     @login_manager.user_loader
     def load_user(user_id):
         return models.User.query.get(int(user_id))
+
 
     from app.routes.auth import auth_bp
     from app.routes.admin import admin_bp
