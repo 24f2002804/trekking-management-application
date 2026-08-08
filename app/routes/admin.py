@@ -47,6 +47,19 @@ def treks():
     return render_template("admin/treks.html", treks=all_treks, search=search)
 
 
+
+@admin_bp.route("/treks/approve/<int:trek_id>", methods=["POST"])
+@login_required
+@role_required("admin")
+def approve_trek(trek_id):
+    trek = Trek.query.get_or_404(trek_id)
+    if trek.status == "Pending":
+        trek.status = "Approved"
+        db.session.commit()
+        flash(f"Trek '{trek.name}' approved.", "success")
+    return redirect(url_for("admin.treks"))
+
+
 @admin_bp.route("/treks/add", methods=["GET", "POST"])
 @login_required
 @role_required("admin")
@@ -216,5 +229,19 @@ def blacklist_user(user_id):
 @login_required
 @role_required("admin")
 def bookings():
-    all_bookings = Booking.query.order_by(Booking.booking_date.desc()).all()
-    return render_template("admin/bookings.html", bookings=all_bookings)
+    search = request.args.get("q", "").strip()
+    status_filter = request.args.get("status", "")
+
+    query = Booking.query.join(Trek).join(User)
+
+    if search:
+        query = query.filter(
+            (Trek.name.ilike(f"%{search}%")) | (User.full_name.ilike(f"%{search}%"))
+        )
+    if status_filter:
+        query = query.filter(Booking.status == status_filter)
+
+    all_bookings = query.order_by(Booking.booking_date.desc()).all()
+    return render_template(
+        "admin/bookings.html", bookings=all_bookings, search=search, status_filter=status_filter
+    )

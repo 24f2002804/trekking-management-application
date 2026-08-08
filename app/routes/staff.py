@@ -82,6 +82,14 @@ def manage_trek(trek_id):
             new_status = request.form.get("new_status")
             if new_status in ("Ongoing", "Completed"):
                 trek.status = new_status
+
+                if new_status == "Completed":
+                    active_bookings = Booking.query.filter_by(
+                        trek_id=trek.id, status="Booked"
+                    ).all()
+                    for booking in active_bookings:
+                        booking.status = "Completed"
+
                 db.session.commit()
                 flash(f"Trek marked as {new_status}.", "success")
 

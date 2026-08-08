@@ -2,6 +2,23 @@
 {% block content %}
 <h3>All Bookings & Trekking History</h3>
 
+<form method="GET" class="row g-2 my-3">
+    <div class="col-md-5">
+        <input type="text" name="q" value="{{ search }}" class="form-control" placeholder="Search by trek name or user name...">
+    </div>
+    <div class="col-md-4">
+        <select name="status" class="form-select">
+            <option value="">All Statuses</option>
+            {% for s in ["Booked", "Cancelled", "Completed"] %}
+            <option value="{{ s }}" {% if status_filter == s %}selected{% endif %}>{{ s }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <div class="col-md-3">
+        <button type="submit" class="btn btn-primary w-100">Filter</button>
+    </div>
+</form>
+
 <table class="table table-bordered">
     <thead>
         <tr><th>Booking ID</th><th>User</th><th>Trek</th><th>Booking Date</th><th>Status</th><th>Payment</th></tr>
@@ -17,7 +34,7 @@
             <td>{{ b.payment_status }}</td>
         </tr>
         {% else %}
-        <tr><td colspan="6" class="text-center">No bookings recorded yet.</td></tr>
+        <tr><td colspan="6" class="text-center">No bookings match your filters.</td></tr>
         {% endfor %}
     </tbody>
 </table>
