@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block content %}
+<h3>Browse Treks</h3>
+
+<form method="GET" class="row g-2 my-3">
+    <div class="col-md-4">
+        <input type="text" name="q" value="{{ search }}" class="form-control" placeholder="Search by trek name...">
+    </div>
+    <div class="col-md-3">
+        <select name="difficulty" class="form-select">
+            <option value="">All Difficulties</option>
+            {% for level in ["Easy", "Moderate", "Hard"] %}
+            <option value="{{ level }}" {% if difficulty == level %}selected{% endif %}>{{ level }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <div class="col-md-3">
+        <select name="location" class="form-select">
+            <option value="">All Locations</option>
+            {% for loc in all_locations %}
+            <option value="{{ loc }}" {% if location == loc %}selected{% endif %}>{{ loc }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <div class="col-md-2">
+        <button type="submit" class="btn btn-primary w-100">Filter</button>
+    </div>
+</form>
+
+<div class="row">
+    {% for trek in treks %}
+    <div class="col-md-4 mb-3">
+        <div class="card p-3">
+            <h5>{{ trek.name }}</h5>
+            <p class="mb-1">{{ trek.location }} &bull; {{ trek.difficulty }} &bull; {{ trek.duration_days }} days</p>
+            <p class="mb-1">Slots left: {{ trek.available_slots }}</p>
+            {% if trek.id in already_booked_trek_ids %}
+                <button class="btn btn-secondary" disabled>Already Booked</button>
+            {% elif trek.available_slots <= 0 %}
+                <button class="btn btn-secondary" disabled>Fully Booked</button>
+            {% else %}
+                <a href="{{ url_for('trekker.trek_details', trek_id=trek.id) }}" class="btn btn-primary">View & Book</a>
+            {% endif %}
+        </div>
+    </div>
+    {% else %}
+    <p class="text-center">No treks match your filters.</p>
+    {% endfor %}
+</div>
+{% endblock %}

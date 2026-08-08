@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block content %}
+<a href="{{ url_for('trekker.browse_treks') }}">&larr; Back to Treks</a>
+<h3 class="mt-2">{{ trek.name }}</h3>
+
+<table class="table table-bordered col-md-6">
+    <tr><th>Location</th><td>{{ trek.location }}</td></tr>
+    <tr><th>Difficulty</th><td>{{ trek.difficulty }}</td></tr>
+    <tr><th>Duration</th><td>{{ trek.duration_days }} days</td></tr>
+    <tr><th>Start Date</th><td>{{ trek.start_date or "-" }}</td></tr>
+    <tr><th>End Date</th><td>{{ trek.end_date or "-" }}</td></tr>
+    <tr><th>Available Slots</th><td>{{ trek.available_slots }}/{{ trek.total_slots }}</td></tr>
+    <tr><th>Status</th><td>{{ trek.status }}</td></tr>
+</table>
+
+<p>{{ trek.description or "No description provided." }}</p>
+
+{% if already_booked %}
+    <button class="btn btn-secondary" disabled>You already booked this trek</button>
+{% elif trek.status != "Open" %}
+    <button class="btn btn-secondary" disabled>Trek is not open for booking</button>
+{% elif trek.available_slots <= 0 %}
+    <button class="btn btn-secondary" disabled>Fully Booked</button>
+{% else %}
+    <form method="POST" action="{{ url_for('trekker.book_trek', trek_id=trek.id) }}">
+        <button type="submit" class="btn btn-primary">Book Now</button>
+    </form>
+{% endif %}
+{% endblock %}
