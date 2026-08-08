@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+{% block content %}
+<a href="{{ url_for('staff.my_treks') }}">&larr; Back to My Treks</a>
+<h3 class="mt-2">{{ trek.name }}</h3>
+
+<div class="row">
+    <div class="col-md-6">
+        <table class="table table-bordered">
+            <tr><th>Location</th><td>{{ trek.location }}</td></tr>
+            <tr><th>Difficulty</th><td>{{ trek.difficulty }}</td></tr>
+            <tr><th>Duration</th><td>{{ trek.duration_days }} days</td></tr>
+            <tr><th>Start Date</th><td>{{ trek.start_date or "-" }}</td></tr>
+            <tr><th>End Date</th><td>{{ trek.end_date or "-" }}</td></tr>
+            <tr><th>Current Status</th><td><strong>{{ trek.status }}</strong></td></tr>
+        </table>
+    </div>
+
+    <div class="col-md-6">
+        <h5>Update Slots & Status</h5>
+        <form method="POST">
+            <input type="hidden" name="action" value="update_slots_status">
+            <div class="mb-3">
+                <label class="form-label">Available Slots (Total: {{ trek.total_slots }})</label>
+                <input type="number" name="available_slots" class="form-control" value="{{ trek.available_slots }}" min="0" max="{{ trek.total_slots }}">
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Trek Status</label>
+                <select name="status" class="form-select">
+                    <option value="Open" {% if trek.status == "Open" %}selected{% endif %}>Open</option>
+                    <option value="Closed" {% if trek.status == "Closed" %}selected{% endif %}>Closed</option>
+                </select>
+            </div>
+            <button type="submit" class="btn btn-primary">Save Changes</button>
+        </form>
+
+        <h5 class="mt-4">Trek Progress</h5>
+        <form method="POST" class="d-inline">
+            <input type="hidden" name="action" value="mark_status">
+            <input type="hidden" name="new_status" value="Ongoing">
+            <button type="submit" class="btn btn-info" {% if trek.status == "Ongoing" or trek.status == "Completed" %}disabled{% endif %}>
+                Mark as Started/Ongoing
+            </button>
+        </form>
+        <form method="POST" class="d-inline">
+            <input type="hidden" name="action" value="mark_status">
+            <input type="hidden" name="new_status" value="Completed">
+            <button type="submit" class="btn btn-success" {% if trek.status == "Completed" %}disabled{% endif %}>
+                Mark as Completed
+            </button>
+        </form>
+    </div>
+</div>
+
+<h5 class="mt-4">Registered Participants ({{ participants | length }})</h5>
+<table class="table table-bordered">
+    <thead>
+        <tr><th>Name</th><th>Email</th><th>Booking Date</th><th>Status</th></tr>
+    </thead>
+    <tbody>
+        {% for booking in participants %}
+        <tr>
+            <td>{{ booking.user.full_name }}</td>
+            <td>{{ booking.user.email }}</td>
+            <td>{{ booking.booking_date.strftime('%d %b %Y') }}</td>
+            <td>{{ booking.status }}</td>
+        </tr>
+        {% else %}
+        <tr><td colspan="4" class="text-center">No participants registered yet.</td></tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}
