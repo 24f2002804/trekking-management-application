@@ -40,9 +40,10 @@ def treks():
     search = request.args.get("q", "").strip()
     query = Trek.query
     if search:
-        query = query.filter(
-            (Trek.name.ilike(f"%{search}%")) | (Trek.location.ilike(f"%{search}%"))
-        )
+        filters = [Trek.name.ilike(f"%{search}%"), Trek.location.ilike(f"%{search}%")]
+        if search.isdigit():
+            filters.append(Trek.id == int(search))
+        query = query.filter(db.or_(*filters))
     all_treks = query.order_by(Trek.created_at.desc()).all()
     return render_template("admin/treks.html", treks=all_treks, search=search)
 
@@ -152,9 +153,10 @@ def staff():
     search = request.args.get("q", "").strip()
     query = User.query.filter_by(role="staff")
     if search:
-        query = query.filter(
-            (User.full_name.ilike(f"%{search}%")) | (User.email.ilike(f"%{search}%"))
-        )
+        filters = [User.full_name.ilike(f"%{search}%"), User.email.ilike(f"%{search}%")]
+        if search.isdigit():
+            filters.append(User.id == int(search))
+        query = query.filter(db.or_(*filters))
     all_staff = query.order_by(User.created_at.desc()).all()
     return render_template("admin/staff.html", staff_members=all_staff, search=search)
 
@@ -204,9 +206,10 @@ def users():
     search = request.args.get("q", "").strip()
     query = User.query.filter_by(role="trekker")
     if search:
-        query = query.filter(
-            (User.full_name.ilike(f"%{search}%")) | (User.email.ilike(f"%{search}%"))
-        )
+        filters = [User.full_name.ilike(f"%{search}%"), User.email.ilike(f"%{search}%")]
+        if search.isdigit():
+            filters.append(User.id == int(search))
+        query = query.filter(db.or_(*filters))
     all_users = query.order_by(User.created_at.desc()).all()
     return render_template("admin/users.html", users=all_users, search=search)
 
