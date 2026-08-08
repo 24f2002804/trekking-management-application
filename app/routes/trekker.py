@@ -161,7 +161,18 @@ def history():
         .order_by(Booking.booking_date.desc())
         .all()
     )
-    return render_template("trekker/history.html", bookings=past_bookings)
+
+    chart_labels = ["Booked", "Completed", "Cancelled"]
+    chart_values = [
+        Booking.query.filter_by(user_id=current_user.id, status=s).count() for s in chart_labels
+    ]
+
+    return render_template(
+        "trekker/history.html",
+        bookings=past_bookings,
+        chart_labels=chart_labels,
+        chart_values=chart_values,
+    )
 
 
 @trekker_bp.route("/profile", methods=["GET", "POST"])

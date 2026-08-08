@@ -28,6 +28,8 @@ def dashboard():
         total_staff=total_staff,
         total_bookings=total_bookings,
         recent_bookings=recent_bookings,
+        chart_labels=["Treks", "Bookings", "Active Users", "Staff"],
+        chart_values=[total_treks, total_bookings, total_users, total_staff],
     )
 
 

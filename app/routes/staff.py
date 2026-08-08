@@ -36,11 +36,18 @@ def dashboard():
     )
     open_treks_count = sum(1 for t in assigned_treks if t.status == "Open")
 
+    chart_labels = [t.name for t in assigned_treks]
+    chart_values = [
+        Booking.query.filter_by(trek_id=t.id, status="Booked").count() for t in assigned_treks
+    ]
+
     return render_template(
         "staff/dashboard.html",
         assigned_treks=assigned_treks,
         total_participants=total_participants,
         open_treks_count=open_treks_count,
+        chart_labels=chart_labels,
+        chart_values=chart_values,
     )
 
 

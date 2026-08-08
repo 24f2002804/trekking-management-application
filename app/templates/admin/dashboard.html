@@ -30,6 +30,15 @@
     </div>
 </div>
 
+<div class="row mt-4">
+    <div class="col-md-6">
+        <div class="card p-3">
+            <h5>Overview</h5>
+            <canvas id="adminChart"></canvas>
+        </div>
+    </div>
+</div>
+
 <div class="mt-4">
     <a href="{{ url_for('admin.treks') }}" class="btn btn-outline-primary">Manage Treks</a>
     <a href="{{ url_for('admin.staff') }}" class="btn btn-outline-primary">Manage Staff</a>
@@ -56,4 +65,28 @@
         {% endfor %}
     </tbody>
 </table>
+
+<script>
+new Chart(document.getElementById('adminChart'), {
+    type: 'bar',
+    data: {
+        labels: {{ chart_labels | tojson }},
+        datasets: [{
+            label: 'Count',
+            data: {{ chart_values | tojson }},
+            backgroundColor: '#0d6efd'
+        }]
+    },
+    options: {
+        responsive: true,
+        plugins: { legend: { display: false } },
+        scales: {
+            y: {
+                ticks: { stepSize: 1 },
+                beginAtZero: true
+            }
+        }
+    }
+});
+</script>
 {% endblock %}

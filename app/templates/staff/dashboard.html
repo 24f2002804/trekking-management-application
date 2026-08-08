@@ -24,6 +24,15 @@
     </div>
 </div>
 
+<div class="row mt-4">
+    <div class="col-md-6">
+        <div class="card p-3">
+            <h5>Participants per Trek</h5>
+            <canvas id="staffChart"></canvas>
+        </div>
+    </div>
+</div>
+
 <div class="mt-4">
     <a href="{{ url_for('staff.my_treks') }}" class="btn btn-outline-primary">View My Treks</a>
     <a href="{{ url_for('staff.profile') }}" class="btn btn-outline-secondary">Edit Profile</a>
@@ -49,4 +58,28 @@
         {% endfor %}
     </tbody>
 </table>
+
+<script>
+new Chart(document.getElementById('staffChart'), {
+    type: 'bar',
+    data: {
+        labels: {{ chart_labels | tojson }},
+        datasets: [{
+            label: 'Participants',
+            data: {{ chart_values | tojson }},
+            backgroundColor: '#198754'
+        }]
+    },
+    options: {
+        responsive: true,
+        plugins: { legend: { display: false } },
+        scales: {
+            y: {
+                ticks: { stepSize: 1 },
+                beginAtZero: true
+            }
+        }
+    }
+});
+</script>
 {% endblock %}

@@ -2,7 +2,18 @@
 {% block content %}
 <h3>Trekking History</h3>
 
-<table class="table table-bordered">
+<div class="row mt-3">
+    <div class="col-md-4">
+        <div class="card p-3">
+            <h5>My Booking Trends</h5>
+            <div style="width: 250px; height: 250px; margin: 0 auto;">
+                <canvas id="trekkerChart"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<table class="table table-bordered mt-4">
     <thead>
         <tr><th>Trek Name</th><th>Trek Dates</th><th>Booking Date</th><th>Status</th></tr>
     </thead>
@@ -19,4 +30,21 @@
         {% endfor %}
     </tbody>
 </table>
+
+<script>
+new Chart(document.getElementById('trekkerChart'), {
+    type: 'pie',
+    data: {
+        labels: {{ chart_labels | tojson }},
+        datasets: [{
+            data: {{ chart_values | tojson }},
+            backgroundColor: ['#0d6efd', '#198754', '#dc3545']
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false
+    }
+});
+</script>
 {% endblock %}
