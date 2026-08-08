@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block content %}
+<h3>Manage Trek Staff</h3>
+
+<form method="GET" class="my-3">
+    <input type="text" name="q" value="{{ search }}" class="form-control" placeholder="Search staff by name or email...">
+</form>
+
+<table class="table table-bordered">
+    <thead>
+        <tr><th>Staff ID</th><th>Name</th><th>Email</th><th>Status</th><th>Actions</th></tr>
+    </thead>
+    <tbody>
+        {% for member in staff_members %}
+        <tr>
+            <td>S{{ '%03d' | format(member.id) }}</td>
+            <td>{{ member.full_name }}</td>
+            <td>{{ member.email }}</td>
+            <td>{{ member.staff_profile.status if member.staff_profile else "N/A" }}</td>
+            <td>
+                {% if member.staff_profile and member.staff_profile.status == "pending" %}
+                <form method="POST" action="{{ url_for('admin.approve_staff', user_id=member.id) }}" style="display:inline;">
+                    <button type="submit" class="btn btn-sm btn-success">Approve</button>
+                </form>
+                {% endif %}
+                {% if member.staff_profile and member.staff_profile.status != "blacklisted" %}
+                <form method="POST" action="{{ url_for('admin.blacklist_staff', user_id=member.id) }}" style="display:inline;">
+                    <button type="submit" class="btn btn-sm btn-warning">Blacklist</button>
+                </form>
+                {% endif %}
+                <form method="POST" action="{{ url_for('admin.remove_staff', user_id=member.id) }}" style="display:inline;" onsubmit="return confirm('Remove this staff account?');">
+                    <button type="submit" class="btn btn-sm btn-danger">Remove</button>
+                </form>
+            </td>
+        </tr>
+        {% else %}
+        <tr><td colspan="5" class="text-center">No staff found.</td></tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

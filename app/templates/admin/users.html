@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block content %}
+<h3>Manage Users (Trekkers)</h3>
+
+<form method="GET" class="my-3">
+    <input type="text" name="q" value="{{ search }}" class="form-control" placeholder="Search users by name or email...">
+</form>
+
+<table class="table table-bordered">
+    <thead>
+        <tr><th>User ID</th><th>Name</th><th>Email</th><th>Status</th><th>Actions</th></tr>
+    </thead>
+    <tbody>
+        {% for user in users %}
+        <tr>
+            <td>U{{ '%03d' | format(user.id) }}</td>
+            <td>{{ user.full_name }}</td>
+            <td>{{ user.email }}</td>
+            <td>{{ "Blacklisted" if user.is_blacklisted else "Active" }}</td>
+            <td>
+                <form method="POST" action="{{ url_for('admin.blacklist_user', user_id=user.id) }}">
+                    <button type="submit" class="btn btn-sm {{ 'btn-success' if user.is_blacklisted else 'btn-warning' }}">
+                        {{ "Reactivate" if user.is_blacklisted else "Blacklist" }}
+                    </button>
+                </form>
+            </td>
+        </tr>
+        {% else %}
+        <tr><td colspan="5" class="text-center">No users found.</td></tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

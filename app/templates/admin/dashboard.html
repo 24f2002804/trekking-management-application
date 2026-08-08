@@ -1,5 +1,59 @@
 {% extends "base.html" %}
 {% block content %}
 <h3>Admin Dashboard</h3>
-<p>Welcome, {{ current_user.full_name }}. This is the Admin dashboard placeholder — treks, staff, and user management will be built in later milestones.</p>
+<p>Welcome, {{ current_user.full_name }}.</p>
+
+<div class="row mt-4">
+    <div class="col-md-3">
+        <div class="card text-center p-3">
+            <h6>Total Treks</h6>
+            <h2>{{ total_treks }}</h2>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-center p-3">
+            <h6>Total Users</h6>
+            <h2>{{ total_users }}</h2>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-center p-3">
+            <h6>Total Staff</h6>
+            <h2>{{ total_staff }}</h2>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-center p-3">
+            <h6>Total Bookings</h6>
+            <h2>{{ total_bookings }}</h2>
+        </div>
+    </div>
+</div>
+
+<div class="mt-4">
+    <a href="{{ url_for('admin.treks') }}" class="btn btn-outline-primary">Manage Treks</a>
+    <a href="{{ url_for('admin.staff') }}" class="btn btn-outline-primary">Manage Staff</a>
+    <a href="{{ url_for('admin.users') }}" class="btn btn-outline-primary">Manage Users</a>
+    <a href="{{ url_for('admin.bookings') }}" class="btn btn-outline-primary">View Bookings</a>
+</div>
+
+<h5 class="mt-4">Recent Bookings</h5>
+<table class="table table-bordered">
+    <thead>
+        <tr><th>Booking ID</th><th>User</th><th>Trek</th><th>Date</th><th>Status</th></tr>
+    </thead>
+    <tbody>
+        {% for b in recent_bookings %}
+        <tr>
+            <td>B{{ '%03d' | format(b.id) }}</td>
+            <td>{{ b.user.full_name }}</td>
+            <td>{{ b.trek.name }}</td>
+            <td>{{ b.booking_date.strftime('%d %b %Y') }}</td>
+            <td>{{ b.status }}</td>
+        </tr>
+        {% else %}
+        <tr><td colspan="5" class="text-center">No bookings yet.</td></tr>
+        {% endfor %}
+    </tbody>
+</table>
 {% endblock %}

@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center">
+    <h3>Manage Treks</h3>
+    <a href="{{ url_for('admin.add_trek') }}" class="btn btn-primary">+ Add New Trek</a>
+</div>
+
+<form method="GET" class="my-3">
+    <input type="text" name="q" value="{{ search }}" class="form-control" placeholder="Search treks by name or location...">
+</form>
+
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>ID</th><th>Trek Name</th><th>Location</th><th>Difficulty</th>
+            <th>Slots</th><th>Status</th><th>Assigned Staff</th><th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for trek in treks %}
+        <tr>
+            <td>{{ trek.id }}</td>
+            <td>{{ trek.name }}</td>
+            <td>{{ trek.location }}</td>
+            <td>{{ trek.difficulty }}</td>
+            <td>{{ trek.available_slots }}/{{ trek.total_slots }}</td>
+            <td>{{ trek.status }}</td>
+            <td>{{ trek.assigned_staff.user.full_name if trek.assigned_staff else "Unassigned" }}</td>
+            <td>
+                <a href="{{ url_for('admin.edit_trek', trek_id=trek.id) }}" class="btn btn-sm btn-outline-primary">Edit</a>
+                <form method="POST" action="{{ url_for('admin.delete_trek', trek_id=trek.id) }}" style="display:inline;" onsubmit="return confirm('Delete this trek?');">
+                    <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
+                </form>
+            </td>
+        </tr>
+        {% else %}
+        <tr><td colspan="8" class="text-center">No treks found.</td></tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}
