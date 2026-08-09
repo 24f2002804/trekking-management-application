@@ -95,12 +95,12 @@ trekking-management-application/
 │   ├── __init__.py         # App factory, extensions, blueprint registration
 │   ├── models.py           # Database models (User, StaffProfile, Trek, Booking)
 │   ├── decorators.py       # Role-based access control decorator
-│   ├── routes/              # Flask Blueprints (auth, admin, staff, trekker)
-│   └── templates/           # Jinja2 HTML templates
-├── instance/                 # SQLite database file (created on first run)
-├── config.py                 # App configuration
-├── seed_admin.py             # Script to create tables + pre-seed Admin account
-├── run.py                    # Application entry point
+│   ├── routes/             # Flask Blueprints (auth, admin, staff, trekker)
+│   └── templates/          # Jinja2 HTML templates
+├── instance/               # SQLite database file (created on first run)
+├── config.py               # App configuration
+├── seed_admin.py           # Script to create tables + pre-seed Admin account
+├── run.py                  # Application entry point
 ├── requirements.txt
 └── .gitignore
 ```
