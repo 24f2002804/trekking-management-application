@@ -2,6 +2,7 @@ from flask import Blueprint, render_template, redirect, url_for, flash, request
 from flask_login import login_user, logout_user, login_required, current_user
 from app import db
 from app.models import User, StaffProfile
+from app.decorators import is_valid_password
 
 auth_bp = Blueprint("auth", __name__, url_prefix="/auth")
 
@@ -22,6 +23,11 @@ def register():
         if not full_name or not email or not password:
             flash("All fields are required.", "danger")
             return redirect(url_for("auth.register"))
+
+        if not is_valid_password(password):
+            flash("Password must be at least 8 characters long and contain at least one digit.", "danger")
+            return redirect(url_for("auth.register"))
+
 
         if password != confirm_password:
             flash("Passwords do not match.", "danger")

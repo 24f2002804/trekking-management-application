@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash
 from flask_login import login_required, current_user
 from app import db
-from app.decorators import role_required
+from app.decorators import role_required, is_valid_password
 from app.models import Trek, Booking
 
 trekker_bp = Blueprint("trekker", __name__, url_prefix="/trekker")
@@ -181,13 +181,39 @@ def history():
 def profile():
     if request.method == "POST":
         full_name = request.form.get("full_name", "").strip()
+        current_password = request.form.get("current_password", "")
+        new_password = request.form.get("new_password", "")
+        confirm_password = request.form.get("confirm_password", "")
+
         if not full_name:
             flash("Name cannot be empty.", "danger")
             return redirect(url_for("trekker.profile"))
 
         current_user.full_name = full_name
+
+        if current_password or new_password or confirm_password:
+            if not current_user.check_password(current_password):
+                flash("Current password is incorrect.", "danger")
+                return redirect(url_for("trekker.profile"))
+
+            if not new_password:
+                flash("New password cannot be empty.", "danger")
+                return redirect(url_for("trekker.profile"))
+
+            if not is_valid_password(new_password):
+                flash("New password must be at least 8 characters long and contain at least one digit.", "danger")
+                return redirect(url_for("trekker.profile"))
+
+            if new_password != confirm_password:
+                flash("New password and confirm password do not match.", "danger")
+                return redirect(url_for("trekker.profile"))
+
+            current_user.set_password(new_password)
+            flash("Profile and password updated successfully.", "success")
+        else:
+            flash("Profile updated successfully.", "success")
+
         db.session.commit()
-        flash("Profile updated successfully.", "success")
         return redirect(url_for("trekker.profile"))
 
     return render_template("trekker/profile.html")

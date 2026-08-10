@@ -2,7 +2,7 @@ from datetime import datetime
 from flask import Blueprint, render_template, request, redirect, url_for, flash
 from flask_login import login_required, current_user
 from app import db
-from app.decorators import role_required
+from app.decorators import role_required, is_valid_password
 from app.models import User, Trek, Booking, StaffProfile
 
 admin_bp = Blueprint("admin", __name__, url_prefix="/admin")
@@ -63,6 +63,10 @@ def profile():
 
             if not new_password:
                 flash("New password cannot be empty.", "danger")
+                return redirect(url_for("admin.profile"))
+
+            if not is_valid_password(new_password):
+                flash("New password must be at least 8 characters long and contain at least one digit.", "danger")
                 return redirect(url_for("admin.profile"))
 
             if new_password != confirm_password:
