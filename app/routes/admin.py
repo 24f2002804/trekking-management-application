@@ -17,9 +17,14 @@ def dashboard():
     total_staff = User.query.filter_by(role="staff").count()
     total_bookings = Booking.query.count()
 
-    recent_bookings = (
-        Booking.query.order_by(Booking.booking_date.desc()).limit(5).all()
-    )
+    all_treks = Trek.query.order_by(Trek.name).all()
+    participants_chart_labels = [t.name for t in all_treks]
+    participants_chart_values = [
+        Booking.query.filter_by(trek_id=t.id)
+        .filter(Booking.status != "Cancelled")
+        .count()
+        for t in all_treks
+    ]
 
     return render_template(
         "admin/dashboard.html",
@@ -27,10 +32,54 @@ def dashboard():
         total_users=total_users,
         total_staff=total_staff,
         total_bookings=total_bookings,
-        recent_bookings=recent_bookings,
         chart_labels=["Treks", "Bookings", "Active Users", "Staff"],
         chart_values=[total_treks, total_bookings, total_users, total_staff],
+        all_treks=all_treks,
+        participants_chart_labels=participants_chart_labels,
+        participants_chart_values=participants_chart_values,
     )
+
+@admin_bp.route("/profile", methods=["GET", "POST"])
+@login_required
+@role_required("admin")
+def profile():
+    if request.method == "POST":
+        full_name = request.form.get("full_name", "").strip()
+        current_password = request.form.get("current_password", "")
+        new_password = request.form.get("new_password", "")
+        confirm_password = request.form.get("confirm_password", "")
+
+        if not full_name:
+            flash("Name cannot be empty.", "danger")
+            return redirect(url_for("admin.profile"))
+
+        current_user.full_name = full_name
+
+        # Only attempt password change if any password field was filled in
+        if current_password or new_password or confirm_password:
+            if not current_user.check_password(current_password):
+                flash("Current password is incorrect.", "danger")
+                return redirect(url_for("admin.profile"))
+
+            if not new_password:
+                flash("New password cannot be empty.", "danger")
+                return redirect(url_for("admin.profile"))
+
+            if new_password != confirm_password:
+                flash("New password and confirm password do not match.", "danger")
+                return redirect(url_for("admin.profile"))
+
+            current_user.set_password(new_password)
+            flash("Profile and password updated successfully.", "success")
+        else:
+            flash("Profile updated successfully.", "success")
+
+        db.session.commit()
+        return redirect(url_for("admin.profile"))
+
+    return render_template("admin/profile.html")
+
+    
 
 
 # ---------------- TREK MANAGEMENT ----------------
@@ -247,6 +296,13 @@ def bookings():
         query = query.filter(Booking.status == status_filter)
 
     all_bookings = query.order_by(Booking.booking_date.desc()).all()
+
+    total_participants = Booking.query.filter(Booking.status != "Cancelled").count()
+
     return render_template(
-        "admin/bookings.html", bookings=all_bookings, search=search, status_filter=status_filter
+        "admin/bookings.html",
+        bookings=all_bookings,
+        search=search,
+        status_filter=status_filter,
+        total_participants=total_participants,
     )

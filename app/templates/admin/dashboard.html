@@ -37,6 +37,12 @@
             <canvas id="adminChart"></canvas>
         </div>
     </div>
+    <div class="col-md-6">
+        <div class="card p-3">
+            <h5>Participants per Trek</h5>
+            <canvas id="participantsChart"></canvas>
+        </div>
+    </div>
 </div>
 
 <div class="mt-4">
@@ -44,27 +50,30 @@
     <a href="{{ url_for('admin.staff') }}" class="btn btn-outline-primary">Manage Staff</a>
     <a href="{{ url_for('admin.users') }}" class="btn btn-outline-primary">Manage Users</a>
     <a href="{{ url_for('admin.bookings') }}" class="btn btn-outline-primary">View Bookings</a>
+    <a href="{{ url_for('admin.profile') }}" class="btn btn-outline-secondary">Edit Profile</a>
 </div>
 
-<h5 class="mt-4">Recent Bookings</h5>
+<h5 class="mt-4">Participants per Trek</h5>
 <table class="table table-bordered">
     <thead>
-        <tr><th>Booking ID</th><th>User</th><th>Trek</th><th>Date</th><th>Status</th></tr>
+        <tr><th>Trek Name</th><th>Location</th><th>Status</th><th>Participants</th><th>Slots</th></tr>
     </thead>
     <tbody>
-        {% for b in recent_bookings %}
+        {% for trek in all_treks %}
         <tr>
-            <td>B{{ '%03d' | format(b.id) }}</td>
-            <td>{{ b.user.full_name }}</td>
-            <td>{{ b.trek.name }}</td>
-            <td>{{ b.booking_date.strftime('%d %b %Y') }}</td>
-            <td>{{ b.status }}</td>
+            <td>{{ trek.name }}</td>
+            <td>{{ trek.location }}</td>
+            <td>{{ trek.status }}</td>
+            <td>{{ trek.bookings | rejectattr("status", "equalto", "Cancelled") | list | length }}</td>  
+            <td>{{ trek.available_slots }}/{{ trek.total_slots }}</td>
         </tr>
         {% else %}
-        <tr><td colspan="5" class="text-center">No bookings yet.</td></tr>
+        <tr><td colspan="5" class="text-center">No treks created yet.</td></tr>
         {% endfor %}
     </tbody>
 </table>
+
+
 
 <script>
 new Chart(document.getElementById('adminChart'), {
@@ -75,6 +84,28 @@ new Chart(document.getElementById('adminChart'), {
             label: 'Count',
             data: {{ chart_values | tojson }},
             backgroundColor: '#0d6efd'
+        }]
+    },
+    options: {
+        responsive: true,
+        plugins: { legend: { display: false } },
+        scales: {
+            y: {
+                ticks: { stepSize: 1 },
+                beginAtZero: true
+            }
+        }
+    }
+});
+
+new Chart(document.getElementById('participantsChart'), {
+    type: 'bar',
+    data: {
+        labels: {{ participants_chart_labels | tojson }},
+        datasets: [{
+            label: 'Participants',
+            data: {{ participants_chart_values | tojson }},
+            backgroundColor: '#198754'
         }]
     },
     options: {

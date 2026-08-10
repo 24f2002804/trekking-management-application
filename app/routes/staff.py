@@ -38,9 +38,12 @@ def dashboard():
 
     chart_labels = [t.name for t in assigned_treks]
     chart_values = [
-        Booking.query.filter_by(trek_id=t.id, status="Booked").count() for t in assigned_treks
+        Booking.query.filter_by(trek_id=t.id)
+        .filter(Booking.status != "Cancelled")
+        .count()
+        for t in assigned_treks
     ]
-
+    
     return render_template(
         "staff/dashboard.html",
         assigned_treks=assigned_treks,

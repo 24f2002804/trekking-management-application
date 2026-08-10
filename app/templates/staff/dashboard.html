@@ -48,7 +48,7 @@
         <tr>
             <td>{{ trek.name }}</td>
             <td>{{ trek.location }}</td>
-            <td>{{ trek.bookings | selectattr("status", "equalto", "Booked") | list | length }}</td>
+            <td>{{ trek.bookings | rejectattr("status", "equalto", "Cancelled") | list | length }}</td>
             <td>{{ trek.available_slots }}/{{ trek.total_slots }}</td>
             <td>{{ trek.status }}</td>
             <td><a href="{{ url_for('staff.manage_trek', trek_id=trek.id) }}" class="btn btn-sm btn-primary">Manage</a></td>
