@@ -14,11 +14,17 @@
             </div>
             <div class="mb-3">
                 <label class="form-label">Password</label>
-                <input type="password" name="password" class="form-control" required>
+                <div class="input-group">
+                    <input type="password" name="password" id="regPassword" class="form-control" required>
+                    <button type="button" class="btn btn-outline-secondary" onclick="togglePassword('regPassword', this)">Show</button>
+                </div>
             </div>
             <div class="mb-3">
                 <label class="form-label">Confirm Password</label>
-                <input type="password" name="confirm_password" class="form-control" required>
+                <div class="input-group">
+                    <input type="password" name="confirm_password" id="regConfirmPassword" class="form-control" required>
+                    <button type="button" class="btn btn-outline-secondary" onclick="togglePassword('regConfirmPassword', this)">Show</button>
+                </div>
             </div>
             <div class="mb-3">
                 <label class="form-label">I am a</label>
@@ -35,4 +41,16 @@
         </p>
     </div>
 </div>
+<script>
+function togglePassword(fieldId, btn) {
+    const field = document.getElementById(fieldId);
+    if (field.type === "password") {
+        field.type = "text";
+        btn.textContent = "Hide";
+    } else {
+        field.type = "password";
+        btn.textContent = "Show";
+    }
+}
+</script>
 {% endblock %}

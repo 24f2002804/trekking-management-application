@@ -1,7 +1,7 @@
 from datetime import datetime
 from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
-from app import db
+from application.database import db
 
 
 class User(db.Model, UserMixin):
@@ -11,11 +11,11 @@ class User(db.Model, UserMixin):
     full_name = db.Column(db.String(120), nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False, index=True)
     password_hash = db.Column(db.String(255), nullable=False)
-    role = db.Column(db.String(20), nullable=False)  # 'admin' | 'staff' | 'trekker'
+    role = db.Column(db.String(20), nullable=False)  
     is_blacklisted = db.Column(db.Boolean, default=False, nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
-    # Relationships
+    
     staff_profile = db.relationship(
         "StaffProfile", backref="user", uselist=False, cascade="all, delete-orphan"
     )
@@ -39,11 +39,11 @@ class StaffProfile(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey("users.id"), unique=True, nullable=False)
     contact_number = db.Column(db.String(20))
-    status = db.Column(db.String(20), default="pending", nullable=False)  # pending|approved|blacklisted
+    status = db.Column(db.String(20), default="pending", nullable=False)  
     approved_at = db.Column(db.DateTime, nullable=True)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
-    # Relationship: one staff profile -> many treks assigned
+   
     treks = db.relationship("Trek", backref="assigned_staff", lazy=True)
 
     def __repr__(self):
@@ -56,13 +56,13 @@ class Trek(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(150), nullable=False)
     location = db.Column(db.String(150), nullable=False)
-    difficulty = db.Column(db.String(20), nullable=False)  # Easy|Moderate|Hard
+    difficulty = db.Column(db.String(20), nullable=False)  
     duration_days = db.Column(db.Integer, nullable=False)
     available_slots = db.Column(db.Integer, nullable=False, default=0)
     total_slots = db.Column(db.Integer, nullable=False, default=0)
     assigned_staff_id = db.Column(db.Integer, db.ForeignKey("staff_profiles.id"), nullable=True)
     status = db.Column(db.String(20), default="Pending", nullable=False)
-    # Pending | Approved | Open | Closed | Completed
+    
     start_date = db.Column(db.Date, nullable=True)
     end_date = db.Column(db.Date, nullable=True)
     description = db.Column(db.Text, nullable=True)
@@ -81,8 +81,8 @@ class Booking(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
     trek_id = db.Column(db.Integer, db.ForeignKey("treks.id"), nullable=False)
     booking_date = db.Column(db.DateTime, default=datetime.utcnow)
-    status = db.Column(db.String(20), default="Booked", nullable=False)  # Booked|Cancelled|Completed
-    payment_status = db.Column(db.String(20), default="Pending", nullable=False)  # Pending|Paid|Refunded
+    status = db.Column(db.String(20), default="Booked", nullable=False)  
+    payment_status = db.Column(db.String(20), default="Pending", nullable=False)  
 
     def __repr__(self):
         return f"<Booking user={self.user_id} trek={self.trek_id} status={self.status}>"
